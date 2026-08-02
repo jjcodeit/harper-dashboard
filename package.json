@@ -1,0 +1,36 @@
+{
+  "name": "harper-dashboard",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0 <23 || >=24.11.0 <25 || >=26.0.0"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck",
+    "validate:contract": "node scripts/validate-release-contract.mjs",
+    "deploy:convex": "convex deploy --cmd 'npm run build'"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.117",
+    "@iconify-json/simple-icons": "^1.2.90",
+    "@nuxt/ui": "^4.10.0",
+    "chart.js": "^4.5.1",
+    "convex": "^1.42.3",
+    "convex-nuxt": "^0.1.5",
+    "convex-vue": "^0.1.5",
+    "nuxt": "^4.4.8",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
+    "@types/node": "^24.10.0",
+    "eslint": "^10.7.0",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.7"
+  }
+}

@@ -1,0 +1,216 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'DM Sans', sans-serif;
+  --font-display: 'Manrope', sans-serif;
+
+  --color-harvest-50: #fff8ed;
+  --color-harvest-100: #ffedd2;
+  --color-harvest-200: #ffd7a4;
+  --color-harvest-300: #ffb96b;
+  --color-harvest-400: #f8953d;
+  --color-harvest-500: #ed7620;
+  --color-harvest-600: #cf5916;
+  --color-harvest-700: #ac4015;
+  --color-harvest-800: #8b3418;
+  --color-harvest-900: #722d18;
+  --color-harvest-950: #3e150a;
+}
+
+@layer theme {
+  :root, .light {
+    --ui-text-dimmed: #89958e;
+    --ui-text-muted: #65736b;
+    --ui-text-toned: #435149;
+    --ui-text: #28362f;
+    --ui-text-highlighted: #18261f;
+    --ui-bg: #f4f7f4;
+    --ui-bg-muted: #edf2ee;
+    --ui-bg-elevated: #ffffff;
+    --ui-bg-accented: #e4ece6;
+    --ui-border: #d8e2da;
+    --ui-border-muted: #e7ede8;
+    --ui-border-accented: #bfcec3;
+    --ui-radius: 0.5rem;
+  }
+
+  .dark {
+    --ui-text-dimmed: #78716c;
+    --ui-text-muted: #a8a29e;
+    --ui-text-toned: #d6d3d1;
+    --ui-text: #e7e5e4;
+    --ui-text-highlighted: #f5f5f4;
+    --ui-bg: #0c0a09;
+    --ui-bg-muted: #1c1917;
+    --ui-bg-elevated: #292524;
+    --ui-bg-accented: #44403c;
+    --ui-border: #44403c;
+    --ui-border-muted: #292524;
+    --ui-border-accented: #57534e;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+    scroll-padding-top: 4rem;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 92% 4%, rgba(237, 118, 32, 0.08), transparent 24rem),
+      var(--ui-bg);
+    color: var(--ui-text);
+  }
+
+  .dark body,
+  body.dark {
+    background:
+      radial-gradient(circle at 92% 4%, rgba(172, 64, 21, 0.15), transparent 24rem),
+      var(--ui-bg);
+  }
+
+  :focus-visible {
+    outline-color: var(--ui-color-primary-400);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .bg-canvas {
+    background-color: #f4f7f4;
+  }
+
+  .dark .bg-canvas {
+    background-color: #0c0a09;
+  }
+
+  .bg-surface {
+    background-color: #ffffff;
+  }
+
+  .dark .bg-surface {
+    background-color: #1c1917;
+  }
+
+  .bg-raised {
+    background-color: #f8faf8;
+  }
+
+  .dark .bg-raised {
+    background-color: #292524;
+  }
+
+  .bg-elevated {
+    background-color: #edf2ee;
+  }
+
+  .dark .bg-elevated {
+    background-color: #44403c;
+  }
+
+  .border-subtle {
+    border-color: #d8e2da;
+  }
+
+  .dark .border-subtle {
+    border-color: #44403c;
+  }
+
+  .divide-subtle > :not(:last-child) {
+    border-color: #d8e2da;
+  }
+
+  .dark .divide-subtle > :not(:last-child) {
+    border-color: #44403c;
+  }
+
+  .text-bright {
+    color: #18261f;
+  }
+
+  .dark .text-bright {
+    color: #f5f5f4;
+  }
+
+  .text-soft {
+    color: #65736b;
+  }
+
+  .dark .text-soft {
+    color: #a8a29e;
+  }
+
+  .text-faint {
+    color: #89958e;
+  }
+
+  .dark .text-faint {
+    color: #78716c;
+  }
+
+  .gradient-violet {
+    background: linear-gradient(135deg, #f8953d 0%, #ed7620 100%);
+  }
+
+  .dark .gradient-violet {
+    background: linear-gradient(135deg, #f8953d 0%, #cf5916 100%);
+  }
+
+  .gradient-violet-soft {
+    background: linear-gradient(135deg, #fff6e8 0%, #ffead0 100%);
+  }
+
+  .dark .gradient-violet-soft {
+    background: linear-gradient(135deg, rgba(237, 118, 32, 0.2) 0%, rgba(172, 64, 21, 0.1) 100%);
+  }
+
+  .glow-violet {
+    box-shadow: 0 24px 60px -38px rgba(172, 64, 21, 0.55);
+  }
+
+  .dark .glow-violet {
+    box-shadow: 0 24px 60px -38px rgba(0, 0, 0, 0.6);
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-cloth {
+    background-color: #e5f0e8;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .dark .table-cloth {
+    background-color: #1c1917;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  }
+
+  .money-summary {
+    background:
+      radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.16), transparent 18rem),
+      #18392f;
+    color: #f8fbf8;
+  }
+}
