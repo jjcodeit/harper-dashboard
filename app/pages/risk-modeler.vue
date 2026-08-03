@@ -49,6 +49,9 @@ const fmtMoney = (v: number | null | undefined) => money(v)
 
 const pipsLabel = computed(() => result.value.result.pipSize === 0.01 ? 'pips (¥)' : 'pips')
 
+const baseCurrency = computed(() => pair.value.toUpperCase().slice(0, 3))
+const quoteCurrency = computed(() => pair.value.toUpperCase().slice(3, 6))
+
 // Auto-narrow current price when user switches to a yen pair (2-decimal pip)
 const presets: Record<string, { price: number }> = {
   EURUSD: { price: 1.10 },
@@ -104,20 +107,43 @@ watch(pair, (p) => {
               </div>
 
               <div class="space-y-5">
-                <UFormGroup
+                <UFormField
                   label="Currency pair"
                   name="pair"
-                  hint="The pair you're trading. First 3 letters = base, last 3 = quote (e.g. EURUSD = EUR base, USD quote)."
+                  hint="The pair you're trading, e.g. EURUSD."
                 >
                   <USelect
                     v-model="pair"
                     :items="['EURUSD', 'USDJPY', 'GBPUSD', 'USDCHF', 'AUDUSD', 'USDCAD']"
                     class="w-full"
                   />
-                </UFormGroup>
+                </UFormField>
 
                 <div class="grid grid-cols-2 gap-4">
-                  <UFormGroup
+                  <UFormField
+                    label="Base currency"
+                    name="base-currency"
+                  >
+                    <UInput
+                      :model-value="baseCurrency"
+                      disabled
+                      class="text-center font-semibold"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Quote currency"
+                    name="quote-currency"
+                  >
+                    <UInput
+                      :model-value="quoteCurrency"
+                      disabled
+                      class="text-center font-semibold"
+                    />
+                  </UFormField>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <UFormField
                     label="Account equity"
                     name="equity"
                     hint="Your total account balance, in the reporting currency."
@@ -128,8 +154,8 @@ watch(pair, (p) => {
                       min="1"
                       placeholder="e.g. 10000"
                     />
-                  </UFormGroup>
-                  <UFormGroup
+                  </UFormField>
+                  <UFormField
                     label="Current price"
                     name="price"
                     hint="Spot price of the pair right now. Auto-filled per pair."
@@ -141,11 +167,11 @@ watch(pair, (p) => {
                       min="0"
                       placeholder="e.g. 1.10"
                     />
-                  </UFormGroup>
+                  </UFormField>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                  <UFormGroup
+                  <UFormField
                     label="Leverage"
                     name="leverage"
                     hint="Broker leverage ratio, e.g. 50 = 50:1. Used to calculate the margin required."
@@ -156,8 +182,8 @@ watch(pair, (p) => {
                       min="1"
                       placeholder="e.g. 50"
                     />
-                  </UFormGroup>
-                  <UFormGroup
+                  </UFormField>
+                  <UFormField
                     label="Reporting currency"
                     name="reporting"
                     hint="The currency your account equity and P&L are measured in."
@@ -166,10 +192,10 @@ watch(pair, (p) => {
                       v-model="reporting"
                       :items="['USD', 'JPY', 'EUR', 'GBP', 'CHF']"
                     />
-                  </UFormGroup>
+                  </UFormField>
                 </div>
 
-                <UFormGroup
+                <UFormField
                   label="Position size"
                   name="units"
                   hint="How much of the base currency you're trading. 100,000 = 1 standard lot, 10,000 = 1 mini lot."
@@ -181,12 +207,12 @@ watch(pair, (p) => {
                     class="text-right"
                     placeholder="e.g. 100000"
                   />
-                </UFormGroup>
+                </UFormField>
 
-                <UDivider label="OR size from a risk budget" />
+                <USeparator label="OR size from a risk budget" />
 
                 <div class="flex items-center gap-3">
-                  <UToggle v-model="useSizing" />
+                  <USwitch v-model="useSizing" />
                   <span class="text-sm text-soft">Size position from my max risk</span>
                 </div>
 
@@ -194,7 +220,7 @@ watch(pair, (p) => {
                   v-if="useSizing"
                   class="grid grid-cols-3 gap-3"
                 >
-                  <UFormGroup
+                  <UFormField
                     label="Risk %"
                     hint="Max % of equity to lose if the stop is hit."
                   >
@@ -205,8 +231,8 @@ watch(pair, (p) => {
                       min="0.1"
                       placeholder="e.g. 1"
                     />
-                  </UFormGroup>
-                  <UFormGroup
+                  </UFormField>
+                  <UFormField
                     label="Stop (pips)"
                     hint="Distance from entry to your stop-loss, in pips."
                   >
@@ -217,8 +243,8 @@ watch(pair, (p) => {
                       min="1"
                       placeholder="e.g. 30"
                     />
-                  </UFormGroup>
-                  <UFormGroup
+                  </UFormField>
+                  <UFormField
                     label="Lev. cap (x)"
                     hint="Hard ceiling on this position's leverage."
                   >
@@ -228,7 +254,7 @@ watch(pair, (p) => {
                       min="1"
                       placeholder="e.g. 20"
                     />
-                  </UFormGroup>
+                  </UFormField>
                 </div>
               </div>
             </UCard>
