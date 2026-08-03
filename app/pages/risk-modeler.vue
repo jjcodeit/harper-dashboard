@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
   computeRisk, sizeForRisk, inferPipSize, LOT_SIZES
 } from '../composables/useLeverageRisk'
+import { api } from '~~/convex/_generated/api'
 
-const { number, money } = useDashboardFormat()
+const { number, money, dateTime: fmtDateTime } = useDashboardFormat()
+const convexClient = useConvexClient()
 
 // --- Form state -------------------------------------------------------------
 const pair = ref('EURUSD')
@@ -18,6 +20,43 @@ const useSizing = ref(false)
 const riskPct = ref(1.0)
 const stopPips = ref(20)
 const leverageCap = ref(20)
+
+// Yahoo Finance FX tickers (the Convex getLivePrices action uses Yahoo)
+const yahooTickers: Record<string, string> = {
+  EURUSD: 'EURUSD=X',
+  USDJPY: 'JPY=X',
+  GBPUSD: 'GBPUSD=X',
+  USDCHF: 'CHF=X',
+  AUDUSD: 'AUDUSD=X',
+  USDCAD: 'CAD=X'
+}
+
+const quoteLoading = ref(false)
+const quoteError = ref<string | null>(null)
+const quoteAsof = ref<string | null>(null)
+
+const fetchLivePrice = async (target = pair.value) => {
+  const yahoo = yahooTickers[target.toUpperCase()]
+  if (!yahoo) return
+  quoteLoading.value = true
+  quoteError.value = null
+  try {
+    const quotes = await convexClient.action(api.getPrices.getLivePrices, {
+      tickers: [yahoo]
+    })
+    const quote = quotes[yahoo]
+    if (quote?.price) {
+      currentPrice.value = quote.price
+      quoteAsof.value = quote.asof
+    } else {
+      quoteError.value = 'No live quote returned for this pair.'
+    }
+  } catch {
+    quoteError.value = 'Live quote unavailable right now — you can still type a price.'
+  } finally {
+    quoteLoading.value = false
+  }
+}
 
 const result = computed(() => {
   let finalUnits = units.value
@@ -52,19 +91,12 @@ const pipsLabel = computed(() => result.value.result.pipSize === 0.01 ? 'pips (�
 const baseCurrency = computed(() => pair.value.toUpperCase().slice(0, 3))
 const quoteCurrency = computed(() => pair.value.toUpperCase().slice(3, 6))
 
-// Auto-narrow current price when user switches to a yen pair (2-decimal pip)
-const presets: Record<string, { price: number }> = {
-  EURUSD: { price: 1.10 },
-  USDJPY: { price: 155.0 },
-  GBPUSD: { price: 1.34 },
-  USDCHF: { price: 0.86 },
-  AUDUSD: { price: 0.70 },
-  USDCAD: { price: 1.40 }
-}
-
+// Fetch a live quote whenever the pair changes, and on first load.
 watch(pair, (p) => {
-  const preset = presets[p.toUpperCase()]
-  if (preset) currentPrice.value = preset.price
+  fetchLivePrice(p)
+})
+onMounted(() => {
+  fetchLivePrice()
 })
 </script>
 
@@ -158,15 +190,47 @@ watch(pair, (p) => {
                   <UFormField
                     label="Current price"
                     name="price"
-                    hint="Spot price of the pair right now. Auto-filled per pair."
+                    hint="Live spot price, refreshed when you change the pair. You can still type your own."
                   >
-                    <UInput
-                      v-model="currentPrice"
-                      type="number"
-                      step="0.0001"
-                      min="0"
-                      placeholder="e.g. 1.10"
-                    />
+                    <div class="flex gap-2">
+                      <UInput
+                        v-model="currentPrice"
+                        type="number"
+                        step="0.0001"
+                        min="0"
+                        placeholder="e.g. 1.10"
+                        class="flex-1"
+                      />
+                      <UButton
+                        icon="i-lucide-refresh-cw"
+                        color="neutral"
+                        variant="soft"
+                        size="md"
+                        :loading="quoteLoading"
+                        aria-label="Refresh live price"
+                        title="Refresh live price"
+                        @click="fetchLivePrice()"
+                      />
+                    </div>
+                    <div class="mt-1.5 flex items-center gap-2">
+                      <UBadge
+                        v-if="quoteError"
+                        color="warning"
+                        variant="soft"
+                        size="sm"
+                        label="Live quote unavailable"
+                      />
+                      <span
+                        v-else
+                        class="inline-flex items-center gap-1 text-xs text-faint"
+                      >
+                        <span class="relative flex size-1.5">
+                          <span class="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+                          <span class="relative inline-flex size-1.5 rounded-full bg-success" />
+                        </span>
+                        Live quote{{ quoteAsof ? ` · ${fmtDateTime(quoteAsof)}` : '' }}
+                      </span>
+                    </div>
                   </UFormField>
                 </div>
 
