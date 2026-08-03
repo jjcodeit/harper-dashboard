@@ -26,7 +26,9 @@ export interface RiskResult {
   notionalUnits: number
   pipSize: number
   notionalValue: number // quote currency
+  notionalValueReport: number // reporting currency
   marginRequired: number // quote currency
+  marginRequiredReport: number // reporting currency
   marginPercent: number // of equity
   freeMarginAfter: number // reporting currency
   impliedLeverage: number
@@ -62,7 +64,8 @@ export function computeRisk(inputs: RiskInputs): RiskResult {
     pair, quoteCurrency: quote, reportingCurrency: reporting,
     accountEquity: inputs.accountEquity, currentPrice: inputs.currentPrice,
     leverage: inputs.leverage, notionalUnits: inputs.notionalUnits, pipSize: pip,
-    notionalValue: 0, marginRequired: 0, marginPercent: 0, freeMarginAfter: 0,
+    notionalValue: 0, notionalValueReport: 0, marginRequired: 0, marginRequiredReport: 0,
+    marginPercent: 0, freeMarginAfter: 0,
     impliedLeverage: 0, pipValueQuote: 0, pipValueReport: 0, lotsStandard: 0,
     stopOutPips: 0, stopOutPrice: 0, drawdownToStopOutPct: 0, protectedEquityPct: 0,
     marginCallPrice: 0, marginCallPips: 0, maxLeverageSingle: 0, errors
@@ -93,9 +96,9 @@ export function computeRisk(inputs: RiskInputs): RiskResult {
   const marginCallRatio = inputs.marginCallRatio ?? 1.0
 
   result.notionalValue = notionalValue
+  result.notionalValueReport = notionalValueReport
   result.marginRequired = marginRequired
-  result.notionalValue = notionalValue
-  result.marginRequired = marginRequired
+  result.marginRequiredReport = marginRequiredReport
   result.pipValueQuote = pipValueQuote
   result.pipValueReport = pipValueReport
   result.lotsStandard = inputs.notionalUnits / LOT_SIZES.standard

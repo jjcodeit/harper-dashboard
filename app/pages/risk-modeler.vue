@@ -84,7 +84,12 @@ const errorText = computed(() => result.value.result.errors.join(', '))
 const fmt = (v: number | null | undefined, d = 2) =>
   number(v ?? 0, { minimumFractionDigits: d, maximumFractionDigits: d })
 
-const fmtMoney = (v: number | null | undefined) => money(v)
+// Format a value in an explicit currency (not just the portfolio default).
+const fmtIn = (v: number | null | undefined, currency: string) =>
+  v == null ? '—' : money(v, currency)
+
+const quoteCur = computed(() => result.value.result.quoteCurrency)
+const reportCur = computed(() => result.value.result.reportingCurrency)
 
 const pipsLabel = computed(() => result.value.result.pipSize === 0.01 ? 'pips (¥)' : 'pips')
 
@@ -344,11 +349,17 @@ onMounted(() => {
                       {{ result.result.pair }} · {{ result.result.leverage }}x leverage
                     </p>
                     <p class="font-display mt-2 text-3xl font-bold tabular-nums text-white">
-                      {{ fmtMoney(result.result.marginRequired) }}
+                      {{ fmtIn(result.result.marginRequiredReport, reportCur) }}
                     </p>
                     <p class="mt-1 text-sm text-white/75">
                       margin required ({{ fmt(result.result.marginPercent, 1) }}% of
-                      {{ fmtMoney(result.result.accountEquity) }})
+                      {{ fmtIn(result.result.accountEquity, reportCur) }})
+                    </p>
+                    <p
+                      v-if="quoteCur !== reportCur"
+                      class="mt-1 text-xs text-white/60"
+                    >
+                      {{ fmtIn(result.result.marginRequired, quoteCur) }} in {{ quoteCur }} terms
                     </p>
                   </div>
                   <div class="text-right">
@@ -381,7 +392,18 @@ onMounted(() => {
                       Position notional
                     </dt>
                     <dd class="font-medium tabular-nums text-bright">
-                      {{ fmtMoney(result.result.notionalValue) }}
+                      {{ fmtIn(result.result.notionalValue, quoteCur) }}
+                    </dd>
+                  </div>
+                  <div
+                    v-if="quoteCur !== reportCur"
+                    class="flex justify-between gap-4 border-t border-subtle pt-3"
+                  >
+                    <dt class="text-soft">
+                      Notional in {{ reportCur }}
+                    </dt>
+                    <dd class="font-medium tabular-nums text-bright">
+                      {{ fmtIn(result.result.notionalValueReport, reportCur) }}
                     </dd>
                   </div>
                   <div class="flex justify-between gap-4 border-t border-subtle pt-3">
@@ -397,7 +419,7 @@ onMounted(() => {
                       Pip value
                     </dt>
                     <dd class="font-medium tabular-nums text-bright">
-                      {{ fmtMoney(result.result.pipValueReport) }} / {{ pipsLabel }}
+                      {{ fmtIn(result.result.pipValueReport, reportCur) }} / {{ pipsLabel }}
                     </dd>
                   </div>
                   <div class="flex justify-between gap-4 border-t border-subtle pt-3">
@@ -405,7 +427,7 @@ onMounted(() => {
                       Free margin after
                     </dt>
                     <dd class="font-medium tabular-nums text-bright">
-                      {{ fmtMoney(result.result.freeMarginAfter) }}
+                      {{ fmtIn(result.result.freeMarginAfter, reportCur) }}
                     </dd>
                   </div>
                 </dl>
@@ -483,7 +505,7 @@ onMounted(() => {
                       Risk budget ({{ fmt(riskPct, 1) }}%)
                     </dt>
                     <dd class="font-medium tabular-nums text-bright">
-                      {{ fmtMoney(result.sizing.riskAmount) }}
+                      {{ fmtIn(result.sizing.riskAmount, reportCur) }}
                     </dd>
                   </div>
                   <div class="flex justify-between gap-4 border-t border-subtle pt-3">
@@ -491,7 +513,7 @@ onMounted(() => {
                       Position notional
                     </dt>
                     <dd class="font-medium tabular-nums text-bright">
-                      {{ fmtMoney(result.result.notionalValue) }}
+                      {{ fmtIn(result.result.notionalValue, quoteCur) }}
                     </dd>
                   </div>
                   <div
