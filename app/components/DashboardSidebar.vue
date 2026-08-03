@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const route = useRoute()
 const items = [
   { label: 'Today', icon: 'i-lucide-sun', target: 'portfolio-overview' },
   { label: 'Your investments', icon: 'i-lucide-sprout', target: 'investments' },
@@ -9,7 +10,17 @@ const items = [
   { label: 'Usage & cost', icon: 'i-lucide-activity', target: 'usage' }
 ]
 
+const tools = [
+  { label: 'Leverage risk modeler', icon: 'i-lucide-gauge', to: '/risk-modeler' },
+  { label: 'Back to portfolio', icon: 'i-lucide-home', to: '/' }
+]
+
 const scrollTo = async (id: string) => {
+  if (route.path !== '/') {
+    // Section links live on the portfolio page; go home first if needed.
+    await navigateTo('/')
+    await nextTick()
+  }
   const element = document.getElementById(id)
   if (element) {
     element.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -53,6 +64,28 @@ const scrollTo = async (id: string) => {
             class="min-h-11 justify-start px-3 text-soft hover:bg-white/70 hover:text-bright"
             @click="scrollTo(item.target)"
           />
+        </li>
+      </ul>
+
+      <p class="mt-6 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-faint">
+        Tools
+      </p>
+      <ul class="space-y-1">
+        <li
+          v-for="tool in tools"
+          :key="tool.to"
+        >
+          <NuxtLink :to="tool.to">
+            <UButton
+              :label="tool.label"
+              :leading-icon="tool.icon"
+              color="neutral"
+              variant="ghost"
+              block
+              class="min-h-11 justify-start px-3 text-soft hover:bg-white/70 hover:text-bright"
+              :class="{ 'bg-white/70 text-bright': route.path === tool.to }"
+            />
+          </NuxtLink>
         </li>
       </ul>
     </nav>
