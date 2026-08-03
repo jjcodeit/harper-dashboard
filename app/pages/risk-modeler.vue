@@ -103,10 +103,11 @@ watch(pair, (p) => {
                 </h2>
               </div>
 
-              <div class="space-y-4">
+              <div class="space-y-5">
                 <UFormGroup
                   label="Currency pair"
                   name="pair"
+                  hint="The pair you're trading. First 3 letters = base, last 3 = quote (e.g. EURUSD = EUR base, USD quote)."
                 >
                   <USelect
                     v-model="pair"
@@ -119,40 +120,47 @@ watch(pair, (p) => {
                   <UFormGroup
                     label="Account equity"
                     name="equity"
+                    hint="Your total account balance, in the reporting currency."
                   >
                     <UInput
                       v-model="accountEquity"
                       type="number"
                       min="1"
+                      placeholder="e.g. 10000"
                     />
                   </UFormGroup>
                   <UFormGroup
                     label="Current price"
                     name="price"
+                    hint="Spot price of the pair right now. Auto-filled per pair."
                   >
                     <UInput
                       v-model="currentPrice"
                       type="number"
                       step="0.0001"
                       min="0"
+                      placeholder="e.g. 1.10"
                     />
                   </UFormGroup>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                   <UFormGroup
-                    label="Leverage (x)"
+                    label="Leverage"
                     name="leverage"
+                    hint="Broker leverage ratio, e.g. 50 = 50:1. Used to calculate the margin required."
                   >
                     <UInput
                       v-model="leverage"
                       type="number"
                       min="1"
+                      placeholder="e.g. 50"
                     />
                   </UFormGroup>
                   <UFormGroup
                     label="Reporting currency"
                     name="reporting"
+                    hint="The currency your account equity and P&L are measured in."
                   >
                     <USelect
                       v-model="reporting"
@@ -164,16 +172,15 @@ watch(pair, (p) => {
                 <UFormGroup
                   label="Position size"
                   name="units"
+                  hint="How much of the base currency you're trading. 100,000 = 1 standard lot, 10,000 = 1 mini lot."
                 >
                   <UInput
                     v-model="units"
                     type="number"
                     min="1"
                     class="text-right"
+                    placeholder="e.g. 100000"
                   />
-                  <p class="mt-1 text-xs text-faint">
-                    base notional units (default = 1 standard lot = 100,000)
-                  </p>
                 </UFormGroup>
 
                 <UDivider label="OR size from a risk budget" />
@@ -187,27 +194,39 @@ watch(pair, (p) => {
                   v-if="useSizing"
                   class="grid grid-cols-3 gap-3"
                 >
-                  <UFormGroup label="Risk %">
+                  <UFormGroup
+                    label="Risk %"
+                    hint="Max % of equity to lose if the stop is hit."
+                  >
                     <UInput
                       v-model="riskPct"
                       type="number"
                       step="0.1"
                       min="0.1"
+                      placeholder="e.g. 1"
                     />
                   </UFormGroup>
-                  <UFormGroup label="Stop (pips)">
+                  <UFormGroup
+                    label="Stop (pips)"
+                    hint="Distance from entry to your stop-loss, in pips."
+                  >
                     <UInput
                       v-model="stopPips"
                       type="number"
                       step="1"
                       min="1"
+                      placeholder="e.g. 30"
                     />
                   </UFormGroup>
-                  <UFormGroup label="Lev. cap (x)">
+                  <UFormGroup
+                    label="Lev. cap (x)"
+                    hint="Hard ceiling on this position's leverage."
+                  >
                     <UInput
                       v-model="leverageCap"
                       type="number"
                       min="1"
+                      placeholder="e.g. 20"
                     />
                   </UFormGroup>
                 </div>
